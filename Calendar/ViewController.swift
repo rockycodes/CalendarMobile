@@ -10,14 +10,8 @@ import UIKit
 import Firebase
 
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
-    @IBOutlet weak var monthLabel: UILabel!
-    @IBOutlet weak var sunday: UILabel!
-    @IBOutlet weak var monday: UILabel!
-    @IBOutlet weak var tuesday: UILabel!
-    @IBOutlet weak var wednesday: UILabel!
-    @IBOutlet weak var thursday: UILabel!
-    @IBOutlet weak var friday: UILabel!
-    @IBOutlet weak var saturday: UILabel!
+    
+    
     
     var db:Firestore!
     
@@ -31,16 +25,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         // Do any additional setup after loading the view, typically from a nib.
         //ADD FETCH DATA FUNCTION HERE?
         db = Firestore.firestore()
-        
-        self.monthLabel.text = "February"
-        self.sunday.text = "Sun"
-        self.monday.text = "Mon"
-        self.tuesday.text = "Tues"
-        self.wednesday.text = "Wed"
-        self.thursday.text = "Thu"
-        self.friday.text = "Fri"
-        self.saturday.text = "Sat"
-
     }
 
     override func didReceiveMemoryWarning() {
@@ -67,6 +51,8 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         db.collection(date).getDocuments(){
             querySnapshot, error in
             if let error = error {
+                print("in error statement")
+                
                 print("\(error.localizedDescription)")
             }else{
                 let eventArr = querySnapshot!.documents.map{document in document.data()}
@@ -85,11 +71,18 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 //must explicitly insert descriptions as strings for joined member to work
                 
                 //if array is more than three items, add a +(num) more at the bottom
+                var returnArr = [String]()
                 
                 if truncatedDescArr.count > 3 {
-                    
+                    let idx = truncatedDescArr.index(truncatedDescArr.startIndex, offsetBy: 2)
+                    returnArr = Array(truncatedDescArr[...idx])
+                    let num = truncatedDescArr.count - 3
+                    returnArr.append("+ \(num) more")
                 }
-                let descriptionStr = truncatedDescArr.joined(separator: "\n")
+                else {
+                    returnArr = truncatedDescArr
+                }
+                let descriptionStr = returnArr.joined(separator: "\n")
                 
                 //if eventArr.count > 3 descriptionStr += "\n+\(eventArr.count-3) more"
                 dayCell.eventDescriptions.text = descriptionStr
@@ -102,10 +95,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     //this is for the delegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath){
-        let eventFormViewPage:EventFormViewController = self.storyboard?.instantiateViewController(withIdentifier: "EventFormViewController") as! EventFormViewController
+        let dayDetailsViewPage:DayDetailsViewController = self.storyboard?.instantiateViewController(withIdentifier: "DayDetailsViewController") as! DayDetailsViewController
         let date = self.nums[indexPath.item]
-        eventFormViewPage.selectedDay = String(date)
-        self.navigationController?.pushViewController(eventFormViewPage, animated: true)
+        dayDetailsViewPage.selectedDay = String(date)
+        self.navigationController?.pushViewController(dayDetailsViewPage, animated: true)
         
     }
     //this is an optional function for the Delegate class - need it so users can interact with items

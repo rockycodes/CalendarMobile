@@ -41,7 +41,6 @@ class EventFormViewController: UIViewController {
         //self.descriptionEntry.clearsOnInsertion = true
     }
     
-    
     @IBAction func createEvent(_ sender: Any) {
         let startTime = self.startTimeEntry.text!
         let endTime = self.endTimeEntry.text!
