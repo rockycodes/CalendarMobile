@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        FirebaseApp.configure()
+        let db = Firestore.firestore()
+        db.collection("cities").document("1").setData([
+            "startTime": "3:00PM",
+            "endTime": "4:00PM",
+            "description": "Time flies"
+        ]) { (error: Error?) in
+            if let error = error {
+                print("\(error.localizedDescription)")
+            } else {
+                print("Woot it worked!")
+            }
+        }
         return true
     }
 
