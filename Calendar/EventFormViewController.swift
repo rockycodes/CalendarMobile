@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class EventFormViewController: UIViewController {
 
@@ -18,11 +19,13 @@ class EventFormViewController: UIViewController {
     @IBOutlet weak var endTimeEntry: UITextField!
     @IBOutlet weak var descriptionEntry: UITextView!
     
+    var db:Firestore!
+    
     var selectedDay:String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        db = Firestore.firestore()
         // Do any additional setup after loading the view.
     }
 
@@ -37,10 +40,27 @@ class EventFormViewController: UIViewController {
         self.dayDateLabel.text = "February \(date)"
         //self.descriptionEntry.clearsOnInsertion = true
     }
-    @IBAction func submitPressed(_ sender: Any) {
-        print(self.startTimeEntry.text!)
-        print(self.endTimeEntry.text!)
-        print(self.descriptionEntry.text!)
+    
+    
+    @IBAction func createEvent(_ sender: Any) {
+        let startTime = self.startTimeEntry.text!
+        let endTime = self.endTimeEntry.text!
+        let description = self.descriptionEntry.text!
+        db.collection(self.selectedDay!).document().setData([
+            "startTime": startTime,
+            "endTime": endTime,
+            "description": description
+        ]) { (error: Error?) in
+            if let error = error {
+                print("\(error.localizedDescription)")
+            } else {
+                print("Event created yayyyy!")
+            }
+        let homepage:ViewController = self.storyboard?.instantiateViewController(withIdentifier: "Homepage") as! ViewController
+        self.navigationController?.pushViewController(homepage, animated: true)
+    }
+    
+   
     }
     
 
