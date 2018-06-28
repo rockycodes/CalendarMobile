@@ -11,7 +11,6 @@ import UIKit
 
 
 class DayCollectionViewCell: UICollectionViewCell {
-    //create outlet for element in cell
 
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var eventDescriptions: UITextView!

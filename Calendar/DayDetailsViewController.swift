@@ -7,51 +7,56 @@
 //
 
 import UIKit
+import Firebase
 
 
-class DayDetailsViewController: UIViewController {
+class DayDetailsViewController: UIViewController, UICollectionViewDataSource {
 
-    @IBOutlet weak var eventsList: UITextView!
+    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var dayDateLabel: UILabel!
-    
-    
+    var events : [Dictionary<String, Any>]! = []
     var selectedDay:String!
+    var db:Firestore!
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        //I would like to avoid doing another data fetch here, but I couldn't figure out how to pass in the correct data for each day from the full month view because Firestore does not return data in a consistent order.
+        db = Firestore.firestore()
+        let date = self.selectedDay!
+        self.dayDateLabel.text = "February \(date)"
+        db.collection(date).getDocuments(){
+            querySnapshot, error in
+            if let error = error {
+                print("in error statement")
+                print("\(error.localizedDescription)")
+            }else{
+                let eventArr = querySnapshot!.documents.map{document in document.data()}
+                self.events = eventArr
+            }
+            self.collectionView.reloadData()
+        }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        let date = self.selectedDay!
-        self.dayDateLabel.text = "February \(date)"
-        //PASS DATA DOWN FROM THE DAY YOU CLICKED ON DUHHHHH
-        //MAKE THIS INTO A STACK VIEW WHERE EVERY ITEM IN THE STACK HAS START AND END TIME AND DESCRIPTION???
-        
-        //self.descriptionEntry.clearsOnInsertion = true
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.events.count
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let eventCell:DayDetailsCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "eventCell", for: indexPath as IndexPath) as! DayDetailsCollectionViewCell
+        let event = self.events![indexPath.item]
+        eventCell.eventDetails.isEditable = false;
+        eventCell.eventDetails.text = "Start Time: \(event["startTime"]!)\nEnd Time: \(event["endTime"]!)\nDescription: \(event["description"]!)"
+        eventCell.backgroundColor = UIColor.cyan
+        return eventCell
     }
-    */
+    
     @IBAction func goToEventForm(_ sender: Any) {
         let eventFormViewPage:EventFormViewController = self.storyboard?.instantiateViewController(withIdentifier: "EventFormViewController") as! EventFormViewController
         eventFormViewPage.selectedDay = self.selectedDay
-        //dayDetailsViewPage.selectedDay = String(date)
         self.navigationController?.pushViewController(eventFormViewPage, animated: true)
     }
     

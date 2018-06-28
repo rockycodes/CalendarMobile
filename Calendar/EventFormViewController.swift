@@ -10,35 +10,23 @@ import UIKit
 import Firebase
 
 class EventFormViewController: UIViewController {
-
-    //maybe don't need to import all of these
-    
     
     @IBOutlet weak var dayDateLabel: UILabel!
     @IBOutlet weak var startTimeEntry: UITextField!
     @IBOutlet weak var endTimeEntry: UITextField!
     @IBOutlet weak var descriptionEntry: UITextView!
-    
     var db:Firestore!
-    
     var selectedDay:String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         db = Firestore.firestore()
-        // Do any additional setup after loading the view.
+        let date = self.selectedDay!
+        self.dayDateLabel.text = "February \(date)"
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        let date = self.selectedDay!
-        self.dayDateLabel.text = "February \(date)"
-        //self.descriptionEntry.clearsOnInsertion = true
     }
     
     @IBAction func createEvent(_ sender: Any) {
@@ -57,20 +45,6 @@ class EventFormViewController: UIViewController {
             }
         let homepage:ViewController = self.storyboard?.instantiateViewController(withIdentifier: "Homepage") as! ViewController
         self.navigationController?.pushViewController(homepage, animated: true)
+        }
     }
-    
-   
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
